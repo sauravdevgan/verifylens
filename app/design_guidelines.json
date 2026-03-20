@@ -1,0 +1,129 @@
+{
+  "identity": {
+    "name": "E1 - The Anti-AI Designer",
+    "mission": "Create a 'Lens of Truth' aesthetic that visually separates reality from fabrication. Use high-contrast technical layouts, scanning motifs, and glassmorphism.",
+    "emotional_tone": "Analytical, Revealing, High-Tech, Trusted."
+  },
+  "typography": {
+    "providers": [
+      {
+        "source": "Google Fonts",
+        "url": "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      }
+    ],
+    "families": {
+      "heading": "Outfit, sans-serif",
+      "body": "DM Sans, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "rules": [
+      "Headings (h1-h3): Outfit. Use 'font-bold' or 'font-black'. Tracking-tight.",
+      "Body: DM Sans. High legibility. Leading-relaxed.",
+      "Data/Code: JetBrains Mono. Use for accuracy scores, hash IDs, and technical specs.",
+      "NEVER use Inter for headings."
+    ]
+  },
+  "colors": {
+    "theme_strategy": "Cyber-Swiss Hybrid",
+    "light": {
+      "background": "#F4F4F5",
+      "foreground": "#09090B",
+      "card": "#FFFFFF",
+      "card_foreground": "#09090B",
+      "primary": "#18181B",
+      "primary_foreground": "#FAFAFA",
+      "secondary": "#E4E4E7",
+      "secondary_foreground": "#18181B",
+      "muted": "#F4F4F5",
+      "muted_foreground": "#71717A",
+      "accent": "#F4F4F5",
+      "accent_foreground": "#18181B",
+      "destructive": "#EF4444",
+      "destructive_foreground": "#FAFAFA",
+      "border": "#E4E4E7",
+      "input": "#E4E4E7",
+      "ring": "#18181B",
+      "brand_real": "#10B981",
+      "brand_fake": "#EC4899"
+    },
+    "dark": {
+      "background": "#09090B",
+      "foreground": "#FAFAFA",
+      "card": "#18181B",
+      "card_foreground": "#FAFAFA",
+      "primary": "#FAFAFA",
+      "primary_foreground": "#18181B",
+      "secondary": "#27272A",
+      "secondary_foreground": "#FAFAFA",
+      "muted": "#27272A",
+      "muted_foreground": "#A1A1AA",
+      "accent": "#27272A",
+      "accent_foreground": "#FAFAFA",
+      "destructive": "#7F1D1D",
+      "destructive_foreground": "#FAFAFA",
+      "border": "#27272A",
+      "input": "#27272A",
+      "ring": "#D4D4D8",
+      "brand_real": "#34D399",
+      "brand_fake": "#F472B6"
+    }
+  },
+  "layout": {
+    "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "spacing_scale_multiplier": 2,
+    "border_radius": "rounded-sm",
+    "glass_strategy": {
+      "light": "bg-white/70 backdrop-blur-xl border-white/20 shadow-sm",
+      "dark": "bg-black/60 backdrop-blur-xl border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.2)]"
+    }
+  },
+  "components": {
+    "buttons": {
+      "default": "rounded-sm font-medium transition-all duration-200 active:scale-95",
+      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-primary/20",
+      "secondary": "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+      "ghost": "hover:bg-accent hover:text-accent-foreground",
+      "outline": "border border-input bg-background hover:bg-accent hover:text-accent-foreground"
+    },
+    "cards": {
+      "base": "rounded-sm border bg-card text-card-foreground shadow-sm",
+      "hover_effect": "hover:shadow-md transition-shadow duration-200"
+    },
+    "inputs": {
+      "base": "rounded-sm border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+    }
+  },
+  "assets": {
+    "hero_bg": "https://images.unsplash.com/photo-1753234506911-d67f301c7e33?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "photographer_hero": "https://images.unsplash.com/photo-1771876499951-2da370bb3280?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "abstract_wave": "https://images.unsplash.com/photo-1771013304380-dfaf9f928de6?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "lens_closeup": "https://images.unsplash.com/photo-1598367886186-71a4e6afc589?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "placeholder_user": "https://images.unsplash.com/photo-1672950273686-0b02667f96aa?crop=entropy&cs=srgb&fm=jpg&q=85"
+  },
+  "motion": {
+    "scroll": "Use Framer Motion 'whileInView' with viewport margin '-100px'.",
+    "hover": "Scale 1.02 on hover for cards. Text color shift for links.",
+    "page_transition": "Opacity fade in (duration: 0.3s).",
+    "micro": "Buttons click scale (0.95)."
+  },
+  "instructions_to_main_agent": [
+    "1. INSTALLATION: Ensure 'lucide-react', 'framer-motion', 'clsx', 'tailwind-merge', 'sonner' are installed.",
+    "2. CLEANUP: Delete contents of 'App.css' and rely on Tailwind classes.",
+    "3. FONTS: Add the Google Fonts link to 'public/index.html' head.",
+    "4. THEME: Implement a 'ThemeProvider' context that manages 'dark' class on HTML element. Persist to localStorage.",
+    "5. NAVIGATION: Create a sticky glassmorphic header.",
+    "6. UPLOAD ZONE: Create a large, dashed-border dropzone with a 'scanning' animation effect (moving gradient).",
+    "7. RESULTS: Display Accuracy Score using a radial progress or large bold number. Use Green for Real, Pink for AI.",
+    "8. COMPARISON: If comparison view is requested, build a slider (Before/After) component.",
+    "9. ICONS: Use Lucide-react icons. NO EMOJIS."
+  ],
+  "universal_guidelines": [
+    "Do not use gradients for dark colors.",
+    "Don't center everything. Use asymmetry for interest.",
+    "Use 2-3x more spacing than default (e.g., p-8 instead of p-4).",
+    "Every interaction needs a micro-animation.",
+    "Use data-testid attributes for all interactive elements.",
+    "Ensure contrast ratios meet WCAG AA.",
+    "Use 'sonner' for toast notifications."
+  ]
+}
