@@ -16,6 +16,7 @@ import razorpay
 import smtplib
 from email.message import EmailMessage
 import random
+import requests
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -832,10 +833,27 @@ def send_subscription_email(user_email: str, user_name: str, plan_name: str, pri
         msg.add_alternative(html, subtype='html')
 
 
-        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-        server.login(gmail_user, gmail_password)
-        server.send_message(msg)
-        server.quit()
+        brevo_key = os.environ.get("BREVO_API_KEY")
+        if brevo_key:
+            resp = requests.post(
+                "https://api.brevo.com/v3/smtp/email",
+                headers={"accept": "application/json", "api-key": brevo_key, "content-type": "application/json"},
+                json={
+                    "sender": {"name": "VerifyLens", "email": gmail_user},
+                    "to": [{"email": user_email}],
+                    "subject": msg['Subject'],
+                    "htmlContent": html,
+                    "textContent": f"{title}\n\nHello {user_name},\n\n{message}\n\nPlan: {plan_name}\nPrice: {price}\nStart Date: {start_date}"
+                },
+                timeout=15
+            )
+            if resp.status_code != 201:
+                logger.error(f"Brevo subscription email error: {resp.text}")
+        else:
+            server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+            server.login(gmail_user, gmail_password)
+            server.send_message(msg)
+            server.quit()
     except Exception as e:
         logger.error(f"Failed to send subscription email: {e}")
 
@@ -880,10 +898,27 @@ def send_styled_otp_email(email: str, otp: str, title: str, subtitle: str):
         msg.add_alternative(html, subtype='html')
 
 
-        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-        server.login(gmail_user, gmail_password)
-        server.send_message(msg)
-        server.quit()
+        brevo_key = os.environ.get("BREVO_API_KEY")
+        if brevo_key:
+            resp = requests.post(
+                "https://api.brevo.com/v3/smtp/email",
+                headers={"accept": "application/json", "api-key": brevo_key, "content-type": "application/json"},
+                json={
+                    "sender": {"name": "VerifyLens", "email": gmail_user},
+                    "to": [{"email": email}],
+                    "subject": f"VerifyLens - {title}",
+                    "htmlContent": html,
+                    "textContent": f"{title}\n\n{subtitle}\n\nYour code is: {otp}\n\nThis code expires in 10 minutes."
+                },
+                timeout=15
+            )
+            if resp.status_code != 201:
+                logger.error(f"Brevo OTP email error: {resp.text}")
+        else:
+            server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+            server.login(gmail_user, gmail_password)
+            server.send_message(msg)
+            server.quit()
     except Exception as e:
         logger.error(f"Failed to send styled OTP email: {e}")
 
