@@ -41,7 +41,7 @@ const PLANS = {
   },
 };
 
-const RAZORPAY_KEY = "rzp_test_SQgBqITmIZb9u5";
+const RAZORPAY_KEY = "rzp_test_STbClgC9raYEEs";
 
 export default function CheckoutPage() {
   const { planId } = useParams();
