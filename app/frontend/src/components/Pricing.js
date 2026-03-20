@@ -51,7 +51,7 @@ export default function Pricing() {
       const currentPrice = tier.calculatePrice ? tier.calculatePrice() : tier.price;
       
       // 1. Create order on backend
-      const orderRes = await axios.post("http://localhost:8000/api/payment/create-order", {
+      const orderRes = await axios.post("/api/payment/create-order", {
         plan_tier: tier.id,
         amount: currentPrice
       }, {
@@ -62,7 +62,7 @@ export default function Pricing() {
 
       // 2. Open Razorpay checkout modal
       const options = {
-        key: "dummy_key_id", // Replace with real key in production or fetch from backend
+        key: "rzp_test_STbClgC9raYEEs",
         amount: order.amount,
         currency: order.currency,
         name: "VerifyLens",
@@ -71,7 +71,7 @@ export default function Pricing() {
         handler: async function (response) {
           try {
             // 3. Verify payment on backend
-            await axios.post("http://localhost:8000/api/payment/verify", {
+            await axios.post("/api/payment/verify", {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature
