@@ -49,7 +49,14 @@ pip install -r requirements.txt
 
 ### Step 2 — Configure environment variables
 
-The `.env` file is already located at `app/backend/.env`. Edit the values as needed:
+Copy the example file and fill in your secrets locally. Do not commit `.env` to Git.
+
+```bash
+cd app/backend
+cp .env.example .env
+```
+
+Then edit `app/backend/.env`:
 
 ```env
 JWT_SECRET=your_super_secret_jwt_key
@@ -65,6 +72,8 @@ GMAIL_APP_PASSWORD=your_gmail_app_password
 RAZORPAY_KEY_ID=rzp_test_xxx
 RAZORPAY_KEY_SECRET=your_razorpay_secret
 ```
+
+If you push code to GitHub, ensure `.gitignore` includes `.env` and `.venv` so keys and local virtualenv metadata are never committed.
 
 > **No email/Razorpay keys?** That's fine — the app runs in **mock mode**: OTPs are returned in the API response and shown in the console.
 

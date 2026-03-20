@@ -1,8 +1,9 @@
 import asyncio
+import os
 import jwt
 from local_db import db
 
-JWT_SECRET = "supersecret_emergent_jwt_key_2024"
+JWT_SECRET = os.environ.get("JWT_SECRET", "supersecret_emergent_jwt_key_2024")
 JWT_ALGORITHM = "HS256"
 
 async def test():
