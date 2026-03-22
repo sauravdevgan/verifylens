@@ -356,6 +356,7 @@ async def resend_otp(data: dict, background_tasks: BackgroundTasks):
     return {"message": "New code sent to your email"}
 
 
+@api_router.get("/auth/me")
 async def get_me(authorization: str = Header("")):
     user = await get_current_user(authorization)
     # user is already a dict returned by get_current_user
