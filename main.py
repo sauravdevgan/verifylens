@@ -45,7 +45,32 @@ if FRONTEND_BUILD_DIR.exists():
         name="react-static",
     )
 
-    # ── 6. Serve index.html for every non-API route (React Router support) ────
+    # ── 6. Serve static root files BEFORE the catch-all ────────────────────
+    # IMPORTANT: favicon and other root files must be registered before the
+    # catch-all /{full_path:path} route, otherwise FastAPI matches catch-all first.
+
+    @app.get("/favicon.png", include_in_schema=False)
+    async def serve_favicon_png():
+        f = FRONTEND_BUILD_DIR / "favicon.png"
+        if f.exists():
+            return FileResponse(str(f), media_type="image/png")
+        return {"detail": "favicon not found"}
+
+    @app.get("/favicon.ico", include_in_schema=False)
+    async def serve_favicon_ico():
+        f = FRONTEND_BUILD_DIR / "favicon.png"
+        if f.exists():
+            return FileResponse(str(f), media_type="image/png")
+        return {"detail": "favicon not found"}
+
+    # ── 7. Serve index.html for every non-API route (React Router support) ──
+    @app.get("/", include_in_schema=False)
+    async def serve_root():
+        index_file = FRONTEND_BUILD_DIR / "index.html"
+        if index_file.exists():
+            return FileResponse(str(index_file))
+        return {"detail": "Frontend not built yet."}
+
     @app.get("/{full_path:path}", include_in_schema=False)
     async def serve_react_app(request: Request, full_path: str):
         """
@@ -56,30 +81,6 @@ if FRONTEND_BUILD_DIR.exists():
         if index_file.exists():
             return FileResponse(str(index_file))
         return {"detail": "Frontend build not found. Run `npm run build` inside app/frontend/"}
-
-    # Serve root / explicitly as well
-    @app.get("/", include_in_schema=False)
-    async def serve_root():
-        index_file = FRONTEND_BUILD_DIR / "index.html"
-        if index_file.exists():
-            return FileResponse(str(index_file))
-        return {"detail": "Frontend not built yet."}
-
-    # Serve favicon files explicitly (must be before the catch-all)
-    @app.get("/favicon.png", include_in_schema=False)
-    async def serve_favicon_png():
-        f = FRONTEND_BUILD_DIR / "favicon.png"
-        if f.exists():
-            return FileResponse(str(f), media_type="image/png")
-        return {"detail": "favicon not found"}
-
-    @app.get("/favicon.ico", include_in_schema=False)
-    async def serve_favicon_ico():
-        # Serve the .png as the .ico too — browsers accept it
-        f = FRONTEND_BUILD_DIR / "favicon.png"
-        if f.exists():
-            return FileResponse(str(f), media_type="image/png")
-        return {"detail": "favicon not found"}
 
 else:
     import logging
