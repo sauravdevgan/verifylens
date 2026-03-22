@@ -65,6 +65,22 @@ if FRONTEND_BUILD_DIR.exists():
             return FileResponse(str(index_file))
         return {"detail": "Frontend not built yet."}
 
+    # Serve favicon files explicitly (must be before the catch-all)
+    @app.get("/favicon.png", include_in_schema=False)
+    async def serve_favicon_png():
+        f = FRONTEND_BUILD_DIR / "favicon.png"
+        if f.exists():
+            return FileResponse(str(f), media_type="image/png")
+        return {"detail": "favicon not found"}
+
+    @app.get("/favicon.ico", include_in_schema=False)
+    async def serve_favicon_ico():
+        # Serve the .png as the .ico too — browsers accept it
+        f = FRONTEND_BUILD_DIR / "favicon.png"
+        if f.exists():
+            return FileResponse(str(f), media_type="image/png")
+        return {"detail": "favicon not found"}
+
 else:
     import logging
     logging.warning(
