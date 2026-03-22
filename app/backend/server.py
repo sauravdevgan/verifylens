@@ -1066,46 +1066,48 @@ async def verify_payment(data: PaymentVerification, background_tasks: Background
         raise HTTPException(status_code=500, detail="Razorpay is not configured")
         
     try:
-        # Verify the signature
-        result = razorpay_client.utility.verify_payment_signature({
+        # verify_payment_signature raises SignatureVerificationError on failure,
+        # returns None on success — do NOT use "if result:"
+        razorpay_client.utility.verify_payment_signature({
             'razorpay_order_id': data.razorpay_order_id,
             'razorpay_payment_id': data.razorpay_payment_id,
             'razorpay_signature': data.razorpay_signature
         })
         
-        if result:
-            # Update user plan (simplified, you should track subscription expiry ideally)
-            order = await db.orders.find_one({"order_id": data.razorpay_order_id})
-            if order:
-                await db.users.update_one(
-                    {"id": user["id"]},
-                    {"$set": {"plan": order.get("plan_tier", "premium"), "plan_updated_at": datetime.now(timezone.utc).isoformat()}}
-                )
-                
-                await db.orders.update_one(
-                    {"order_id": data.razorpay_order_id},
-                    {"$set": {"status": "paid", "payment_id": data.razorpay_payment_id}}
-                )
-
-                # Send Confirmation Email
-                start_date = datetime.now(timezone.utc).strftime("%d/%m/%Y")
-                next_billing = (datetime.now(timezone.utc) + timedelta(days=30)).strftime("%d/%m/%Y")
-                plan_tier = order.get("plan_tier", "premium")
-                price_str = f"INR {order.get('amount', 0)}"
-                
-                # Run in background to not block verification response
-                background_tasks.add_task(
-                    send_subscription_email,
-                    user["email"], user["name"], plan_tier, price_str, start_date, next_billing, type="success"
-                )
-                
-            return {"status": "success", "message": "Payment verified successfully"}
-        else:
-            raise HTTPException(status_code=400, detail="Invalid signature")
+        # If we reach here, signature is valid — update the user's plan
+        order = await db.orders.find_one({"order_id": data.razorpay_order_id})
+        plan_tier = order.get("plan_tier", "premium") if order else "premium"
+        
+        await db.users.update_one(
+            {"id": user["id"]},
+            {"$set": {
+                "plan": plan_tier,
+                "plan_updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        if order:
+            await db.orders.update_one(
+                {"order_id": data.razorpay_order_id},
+                {"$set": {"status": "paid", "payment_id": data.razorpay_payment_id}}
+            )
             
+            # Send Confirmation Email in background
+            start_date = datetime.now(timezone.utc).strftime("%d/%m/%Y")
+            next_billing = (datetime.now(timezone.utc) + timedelta(days=30)).strftime("%d/%m/%Y")
+            price_str = f"INR {order.get('amount', 0)}"
+            background_tasks.add_task(
+                send_subscription_email,
+                user["email"], user["name"], plan_tier, price_str, start_date, next_billing, type="success"
+            )
+        
+        logger.info(f"Payment verified: user={user['id']} plan={plan_tier}")
+        return {"status": "success", "message": "Payment verified successfully", "plan": plan_tier}
+        
     except Exception as e:
         logger.error(f"Razorpay verification error: {str(e)}")
         raise HTTPException(status_code=400, detail="Payment verification failed")
+
 
 @api_router.post("/payment/cancel")
 async def cancel_subscription(background_tasks: BackgroundTasks, authorization: str = Header("")):
