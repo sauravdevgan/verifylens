@@ -9,7 +9,6 @@ ENV/
 
 # Node
 node_modules/
-build/
 dist/
 .env.production
 .env.local
@@ -20,3 +19,5 @@ dist/
 # OS
 .DS_Store
 Thumbs.db
+
+.env
