@@ -898,28 +898,42 @@ def send_styled_otp_email(email: str, otp: str, title: str, subtitle: str):
         msg.set_content(f"{title}\n\n{subtitle}\n\nYour code is: {otp}\n\nThis code expires in 10 minutes.")
         msg.add_alternative(html, subtype='html')
 
+        # Always log OTP in console for quick debugging
+        logger.info(f"===> OTP CODE FOR {email}: {otp} <===")
 
+        sent = False
         brevo_key = os.environ.get("BREVO_API_KEY")
         if brevo_key:
-            resp = requests.post(
-                "https://api.brevo.com/v3/smtp/email",
-                headers={"accept": "application/json", "api-key": brevo_key, "content-type": "application/json"},
-                json={
-                    "sender": {"name": "VerifyLens", "email": gmail_user},
-                    "to": [{"email": email}],
-                    "subject": f"VerifyLens - {title}",
-                    "htmlContent": html,
-                    "textContent": f"{title}\n\n{subtitle}\n\nYour code is: {otp}\n\nThis code expires in 10 minutes."
-                },
-                timeout=15
-            )
-            if resp.status_code != 201:
-                logger.error(f"Brevo OTP email error: {resp.text}")
-        else:
-            server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-            server.login(gmail_user, gmail_password)
-            server.send_message(msg)
-            server.quit()
+            try:
+                resp = requests.post(
+                    "https://api.brevo.com/v3/smtp/email",
+                    headers={"accept": "application/json", "api-key": brevo_key, "content-type": "application/json"},
+                    json={
+                        "sender": {"name": "VerifyLens", "email": gmail_user},
+                        "to": [{"email": email}],
+                        "subject": f"VerifyLens - {title}",
+                        "htmlContent": html,
+                        "textContent": f"{title}\n\n{subtitle}\n\nYour code is: {otp}\n\nThis code expires in 10 minutes."
+                    },
+                    timeout=15
+                )
+                if resp.status_code == 201:
+                    sent = True
+                    logger.info(f"OTP email sent successfully via Brevo to {email}")
+                else:
+                    logger.error(f"Brevo OTP email error: {resp.text}. Falling back to Gmail SMTP...")
+            except Exception as be:
+                logger.error(f"Brevo request failed: {be}. Falling back to Gmail SMTP...")
+
+        if not sent:
+            try:
+                server = smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=15)
+                server.login(gmail_user, gmail_password)
+                server.send_message(msg)
+                server.quit()
+                logger.info(f"OTP email sent successfully via Gmail SMTP to {email}")
+            except Exception as se:
+                logger.error(f"Gmail SMTP also failed: {se}")
     except Exception as e:
         logger.error(f"Failed to send styled OTP email: {e}")
 
