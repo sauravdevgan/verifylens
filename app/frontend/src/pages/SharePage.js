@@ -8,7 +8,7 @@ import {
   Loader2, AlertTriangle, CheckCircle2, Minus, ScanEye
 } from "lucide-react";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = (process.env.REACT_APP_BACKEND_URL || "") + "/api";
 
 function ScoreCircle({ score, verdict }) {
   const isReal = verdict === "Likely Real";

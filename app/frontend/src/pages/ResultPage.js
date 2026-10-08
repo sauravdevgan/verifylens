@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import html2canvas from "html2canvas";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = (process.env.REACT_APP_BACKEND_URL || "") + "/api";
 
 const dataURLtoFile = (dataurl, filename) => {
   try {

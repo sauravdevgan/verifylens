@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import axios from "axios";
 import { Search, Loader2, Clock, ArrowRight, Image, Film, ScanEye } from "lucide-react";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = (process.env.REACT_APP_BACKEND_URL || "") + "/api";
 
 export default function HistoryPage() {
   const { token } = useAuth();

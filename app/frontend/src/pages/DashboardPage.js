@@ -12,7 +12,7 @@ import {
   BarChart3, Shield, ChevronRight, TrendingUp, Trash2, Sparkles, CheckCircle2, Star
 } from "lucide-react";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = (process.env.REACT_APP_BACKEND_URL || "") + "/api";
 const PLAN_LABELS = { free: "Free", vip: "VIP", premium: "Premium" };
 const PLAN_COLORS = {
   free: "bg-secondary text-secondary-foreground",
