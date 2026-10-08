@@ -53,7 +53,7 @@ export default function AuthPage() {
     try {
       let resp;
       if (mode === "register") {
-        resp = await axios.post("http://localhost:8000/api/auth/send-otp", { email });
+        resp = await axios.post("/api/auth/send-otp", { email });
         if (resp.data.mock_otp) {
           toast.info(`MOCK OTP: ${resp.data.mock_otp}`);
           setRegisterForm(prev => ({ ...prev, otp: resp.data.mock_otp }));
@@ -61,7 +61,7 @@ export default function AuthPage() {
           toast.success("New code sent to your email!");
         }
       } else {
-        resp = await axios.post("http://localhost:8000/api/auth/resend-otp", { email, mode });
+        resp = await axios.post("/api/auth/resend-otp", { email, mode });
         if (resp.data.mock_otp) {
           toast.info(`MOCK OTP: ${resp.data.mock_otp}`);
           if (mode === "reset") setForgotOTP(resp.data.mock_otp);
@@ -85,7 +85,7 @@ export default function AuthPage() {
     }
     setLoading(true);
     try {
-      const resp = await axios.post("http://localhost:8000/api/auth/login", {
+      const resp = await axios.post("/api/auth/login", {
         email: loginForm.email,
         password: loginForm.password
       });
@@ -111,7 +111,7 @@ export default function AuthPage() {
     }
     setLoading(true);
     try {
-      const resp = await axios.post("http://localhost:8000/api/auth/login/verify", {
+      const resp = await axios.post("/api/auth/login/verify", {
         email: loginForm.email,
         otp: loginOTP
       });
@@ -136,7 +136,7 @@ export default function AuthPage() {
     }
     setLoading(true);
     try {
-      const resp = await axios.post("http://localhost:8000/api/auth/send-otp", {
+      const resp = await axios.post("/api/auth/send-otp", {
         email: registerForm.email
       });
       if (resp.data.mock_otp) {
@@ -161,7 +161,7 @@ export default function AuthPage() {
     }
     setLoading(true);
     try {
-      const resp = await axios.post("http://localhost:8000/api/auth/register", {
+      const resp = await axios.post("/api/auth/register", {
         name: registerForm.name,
         email: registerForm.email,
         password: registerForm.password,
@@ -182,7 +182,7 @@ export default function AuthPage() {
     if (!forgotEmail) { toast.error("Please enter your email"); return; }
     setLoading(true);
     try {
-      const resp = await axios.post("http://localhost:8000/api/auth/forgot-password", { email: forgotEmail });
+      const resp = await axios.post("/api/auth/forgot-password", { email: forgotEmail });
       if (resp.data.mock_otp) {
         toast.info(`MOCK OTP: ${resp.data.mock_otp} (Auto-filled)`);
         setForgotOTP(resp.data.mock_otp);
@@ -202,7 +202,7 @@ export default function AuthPage() {
     if (forgotOTP.length !== 6) { toast.error("Enter the 6-digit code"); return; }
     setLoading(true);
     try {
-      await axios.post("http://localhost:8000/api/auth/forgot-password/verify", { email: forgotEmail, otp: forgotOTP });
+      await axios.post("/api/auth/forgot-password/verify", { email: forgotEmail, otp: forgotOTP });
       toast.success("Code verified!");
       setForgotStep(3);
     } catch (err) {
@@ -217,7 +217,7 @@ export default function AuthPage() {
     if (newPassword !== confirmPassword) { toast.error("Passwords do not match"); return; }
     setLoading(true);
     try {
-      const resp = await axios.post("http://localhost:8000/api/auth/forgot-password/reset", {
+      const resp = await axios.post("/api/auth/forgot-password/reset", {
         email: forgotEmail,
         otp: forgotOTP,
         new_password: newPassword

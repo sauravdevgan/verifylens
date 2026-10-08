@@ -91,7 +91,7 @@ export default function CheckoutPage() {
     try {
       // Step 1: Create Razorpay order on backend
       const orderRes = await axios.post(
-        "http://localhost:8000/api/payment/create-order",
+        "/api/payment/create-order",
         { plan_tier: plan.id, amount: finalPrice },
         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
@@ -111,7 +111,7 @@ export default function CheckoutPage() {
           try {
             // Step 3: Verify payment on backend
             await axios.post(
-              "http://localhost:8000/api/payment/verify",
+              "/api/payment/verify",
               {
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
